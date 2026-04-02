@@ -1,8 +1,17 @@
-FROM python:latest
+FROM python:3.11-slim
 
-RUN apt-get update -y && apt-get upgrade -y
+WORKDIR /app
 
-RUN pip3 install -U pip setuptools
-RUN pip3 install -U -r requirements.txt
+# Copy requirements first for better caching
+COPY requirements.txt .
 
-CMD ["python3","-m","FallenRobot"]
+# Install system dependencies and Python packages
+RUN apt-get update -y && apt-get upgrade -y && \
+    pip3 install -U pip setuptools && \
+    pip3 install -U -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Run the bot
+CMD ["python3", "-m", "FallenRobot"]
